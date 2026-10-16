@@ -1,0 +1,21 @@
+.catalog {margin:16px 0; padding:16px; border:1px solid #d1d5db; border-radius:12px; background:#f9fafb}
+.catalog h2, dialog h2 {font-size:1.1rem; margin-top:0}
+.duplicate-pair {border-top:1px solid #ddd; padding:12px 0; overflow-wrap:anywhere}
+.duplicate-pair button {margin:4px}
+summary {cursor:pointer}
+#providerName, #providerValue {display:block; width:100%; margin:6px 0 12px}
+input:not([type=checkbox]) {font:inherit; padding:9px; border:1px solid #9ca3af; border-radius:8px; max-width:100%}
+#searchSongs {display:block; width:100%; margin-top:8px}
+#listPanelBody {padding-left:24px}
+#listPanelBody>li {padding:10px 0; border-bottom:1px solid #ddd}
+.song-meta {display:block; color:#4b5563; margin:6px 0; overflow-wrap:anywhere}
+.taxonomy-row {display:flex; flex-wrap:wrap; gap:6px; margin:6px 0; align-items:center}
+.taxonomy-row input {flex:1; min-width:100px}
+dialog {border:1px solid #ccc; border-radius:16px; max-width:580px; width:94%; max-height:90vh; overflow:auto}
+dialog::backdrop {background:#0007}
+dialog label:not(.choice) {display:block; margin:12px 0}
+dialog label>input:not([type=checkbox]) {display:block; width:100%; margin-top:5px}
+.choice {display:inline-flex; align-items:center; gap:4px; margin:5px 10px 5px 0}
+fieldset {border:1px solid #ccc; border-radius:8px; margin:12px 0}
+button:focus-visible, input:focus-visible, select:focus-visible {outline:3px solid #60a5fa; outline-offset:2px}
+@media(max-width:500px) {body {padding:8px} .app {padding:14px} h1 {font-size:1.3rem} .title-icon {width:70px} .controls>label {width:100%} .result-list li {font-size:1.2rem; overflow-wrap:anywhere; max-width:100%} }

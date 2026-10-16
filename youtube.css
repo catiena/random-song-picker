@@ -1,0 +1,14 @@
+.youtube-settings { margin: 16px 0; padding: 14px; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 10px; font-size: .85rem; line-height: 1.7; }
+.youtube-settings summary { cursor: pointer; font-weight: bold; }
+.youtube-settings input[type=password] { display: block; width: 100%; padding: 10px; margin: 6px 0 12px; border: 1px solid #9ca3af; border-radius: 6px; }
+.result-list > li { display: block; border-radius: 16px; overflow-wrap: anywhere; }
+.youtube-candidates { font-size: .9rem; line-height: 1.6; margin-top: 12px; }
+.youtube-candidates a { color: #174db5; }
+.youtube-candidates ol { padding-left: 24px; margin: 8px 0; }
+.result-list .youtube-candidates li { display: list-item; border-radius: 0; background: transparent; font-size: .9rem; padding: 4px; margin: 0; }
+.youtube-candidates small { display: block; color: #4b5563; }
+.youtube-candidates p { margin: 6px 0; color: #4b5563; }
+button:disabled { cursor: wait; opacity: .65; }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+@media (max-width: 520px) { body { padding: 10px; } .app { padding: 16px; } h1 { font-size: 1.4rem; } .title-icon { width: 90px; } }
+

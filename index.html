@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ランダムピッカー v0.960</title>
+
+  <!-- Kosugi Maru Webフォント -->
+  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Kosugi Maru', sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      max-width: 800px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    /* タイトル＋アイコン横並び */
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      letter-spacing: 1px;
+    }
+
+    .title-icon {
+      width: 120px;
+      height: auto;
+      margin-left: 10px;
+      border-radius: 12px;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      padding: 10px;
+      font-size: 0.9rem;
+      resize: vertical;
+      font-family: 'Kosugi Maru', sans-serif;
+    }
+
+    textarea::placeholder {
+      color: #b0b6bf;
+      opacity: 1;
+      font-family: 'Kosugi Maru', sans-serif;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 12px 0;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.05s ease, box-shadow 0.1s ease;
+      font-family: 'Kosugi Maru', sans-serif;
+    }
+
+    button.primary { background: #2563eb; color: white; }
+    button.secondary { background: #e5e7eb; color: #111827; }
+    button.danger { background: #f87171; color: white; }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+
+    select {
+      border-radius: 999px;
+      padding: 6px 10px;
+      border: 1px solid #d1d5db;
+      font-family: 'Kosugi Maru', sans-serif;
+      font-size: 0.9rem;
+    }
+
+    .status {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin: 4px 0 8px;
+    }
+
+    .options-row {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #4b5563;
+    }
+
+    .options-row label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    /* 抽選結果カード */
+    .result-card {
+      margin: 8px 0 16px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      display: none;
+    }
+
+    .result-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .result-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+
+    /* 曲名のフォント大きめ */
+    .result-list li {
+      background: #e5e7eb;
+      padding: 10px 16px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-bottom: 10px;
+      font-size: 1.6rem;
+    }
+
+    .note {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+
+    .list-panel {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      max-height: 260px;
+      overflow-y: auto;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .list-panel-title {
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #4b5563;
+    }
+  </style>
+  <link rel="stylesheet" href="youtube.css" />
+  <link rel="stylesheet" href="catalog.css" />
+</head>
+
+<body>
+  <div class="app">
+    <div class="title-row">
+      <h1>ランダムピッカー v0.960</h1>
+      <img
+        class="title-icon"
+        src="images/singingicon.png"
+        alt="picker icon"
+      />
+    </div>
+
+    <div class="subtitle">
+      保存した曲から、今日歌う1〜2曲を選びます。<br>
+      曲の追加は下の「曲を追加・登録する」から。
+    </div>
+
+    <section class="catalog" aria-label="オケ検索先">
+      <label for="searchProvider">オケ検索先</label> <select id="searchProvider"></select>
+      <details><summary>検索先を登録・管理する</summary>
+        <p>YouTubeのチャンネル名・キーワード、または別サイトの検索URLを登録できます。</p>
+        <label>表示名<input id="providerName" placeholder="いつものオケ"></label>
+        <label>種類<select id="providerType"><option value="youtube">YouTubeのキーワード</option><option value="website">別サイトの検索URL</option></select></label>
+        <label>キーワード／検索URL<input id="providerValue" placeholder="チャンネル名、または https://…?q={query}"></label>
+        <p class="note">検索URLは曲名を入れる位置を {query} に置き換えてください。別サイトは検索リンクで開きます。</p>
+        <div class="controls"><button id="saveProvider" class="secondary">検索先を追加</button><button id="deleteProvider" class="secondary">選択した登録先を削除</button></div>
+        <p id="providerStatus" role="status"></p>
+      </details>
+    </section>
+    <details class="youtube-settings">
+      <summary>YouTubeカラオケ候補の設定</summary>
+      <p>APIキーはここで入力してください。チャットへの共有は不要です。既定ではこのタブを開いている間だけ保持します。</p>
+      <label for="youtubeApiKey">YouTube Data API v3 キー</label>
+      <input id="youtubeApiKey" type="password" autocomplete="off" spellcheck="false" placeholder="APIキーを入力" />
+      <label><input id="rememberYoutubeKey" type="checkbox" /> このブラウザにキーを保存する（共有端末ではオフ）</label>
+      <div class="controls">
+        <button id="saveYoutubeKey" class="secondary" type="button">キーを適用</button>
+        <button id="forgetYoutubeKey" class="secondary" type="button">キーを削除</button>
+        <button id="clearYoutubeCache" class="secondary" type="button">検索キャッシュを削除</button>
+      </div>
+      <p id="youtubeKeyStatus" role="status"></p>
+      <p>Google Cloudで「ウェブサイト」の制限と「YouTube Data API v3」のAPI制限を設定してください。ブラウザから送信するキーは通信内容から確認できます。</p>
+    </details>
+
+    <section class="catalog" aria-label="検索と絞り込み">
+      <h2>曲を探す・絞り込む</h2>
+      <label for="searchSongs">曲名・アーティスト・ジャンル・タグ</label>
+      <input id="searchSongs" type="search" placeholder="スペース区切りでAND検索">
+      <div class="controls">
+        <label>ジャンル <select id="genreFilter"></select></label>
+        <label>タグ <select id="tagFilter"></select></label>
+        <button id="clearFilters" class="secondary">絞り込み解除</button>
+      </div>
+      <p id="filterStatus" role="status"></p>
+      <p class="note">抽選・一覧は絞り込んだ曲が対象です。条件を変えると抽選履歴がリセットされます。</p>
+    </section>
+    <details class="catalog"><summary>ジャンル・タグを管理</summary>
+      <p>名前の変更は登録曲にも反映。削除は曲から分類だけを外します。</p>
+      <div id="taxonomyManager"></div>
+    </details>
+    <dialog id="songEditor">
+      <form id="editForm">
+        <h2>曲を編集</h2>
+        <label>曲名<input id="editTitle" required></label>
+        <label>アーティスト<input id="editArtist"></label>
+        <fieldset><legend>ジャンル（複数選択）</legend><div id="editGenres"></div></fieldset>
+        <label>新しいジャンル（カンマ区切り）<input id="editNewGenres"></label>
+        <fieldset><legend>タグ（複数選択）</legend><div id="editTags"></div></fieldset>
+        <label>新しいタグ（カンマ区切り）<input id="editNewTags"></label>
+        <div class="controls"><button class="primary" type="submit">保存</button><button id="cancelEdit" type="button" class="secondary">キャンセル</button></div>
+      </form>
+    </dialog>
+    <!-- 曲数選択 & ランダム & リセット -->
+    <div class="controls">
+      <div>
+        <label for="pickCount" style="font-size:0.8rem;">選ぶ曲数</label><br>
+        <select id="pickCount">
+          <option value="1">1曲</option>
+          <option value="2">2曲</option>
+        </select>
+      </div>
+
+      <button id="pickBtn" class="primary">ランダムに選ぶ 🎲</button>
+      <button id="resetCycleBtn" class="secondary">抽選履歴リセット</button>
+    </div>
+
+    <!-- 抽選結果 -->
+    <div id="resultCard" class="result-card">
+      <div class="result-title">
+        抽選結果
+        <span id="cycleInfo" style="font-size:0.9rem;color:#6b7280;margin-left:5px;"></span>
+      </div>
+      <ul id="resultList" class="result-list"></ul>
+      <div id="note" class="note"></div>
+      <p class="note">YouTube候補は選択したキーワードとガイドメロなしの表記を優先します。無料利用・配信利用の可否は各動画の説明欄で確認してください。</p>
+    </div>
+
+    <!-- 一覧・エクスポート・インポート -->
+    <div class="controls">
+      <button id="toggleListBtn" class="secondary">保存リスト一覧を表示 ▶</button>
+      <button id="exportTxtBtn" class="secondary">TXTで書き出し</button>
+      <button id="exportJsonBtn" class="secondary">JSONで完全バックアップ</button>
+      <button id="exportCsvBtn" class="secondary">CSVで書き出し</button>
+      <button id="importBtn" class="secondary">ファイルから読み込み</button>
+      <input type="file" id="importFile" accept=".txt,.csv,.json" style="display:none;">
+    </div>
+
+    <details class="catalog" id="duplicatePanel"><summary>似ている曲・重複をチェック</summary>
+      <p>全角・半角、大文字・小文字、空白や記号、かなの違いと、軽微なタイプミスを調べます。別の曲の場合もあるので確認して整理してください。</p>
+      <button id="scanDuplicates" class="secondary">全曲をチェック</button>
+      <p id="duplicateStatus" role="status"></p><div id="duplicateResults"></div>
+    </details>
+    <div id="status" class="status">現在の保存曲数：0（未登録）</div>
+
+    <div id="listPanel" class="list-panel">
+      <div class="list-panel-title">保存されている曲</div>
+      <ol id="listPanelBody"></ol>
+    </div>
+    <details class="catalog" id="registration"><summary>曲を追加・登録する</summary>
+    <label for="songInput">追加したい曲リスト</label>
+    <textarea
+      id="songInput"
+      placeholder="【例1：曲名 / アーティスト】&#10;青と夏 / Mrs. GREEN APPLE&#10;&#10;【例2：タイムスタンプ付き】&#10;0:00 青と夏 / Mrs. GREEN APPLE&#10;1:23:45 残酷な天使のテーゼ / 高橋洋子&#10;&#10;【例3：TSV（タブ区切り）】&#10;青と夏&#9;Mrs. GREEN APPLE&#10;🎸視界の隅、朽ちる音&#9;トゲナシトゲアリ(新川崎(仮))"
+    ></textarea>
+
+    <div class="options-row">
+      <label>
+        <input type="checkbox" id="stripTimestamp" checked>
+        行頭のタイムスタンプを削除
+      </label>
+    </div>
+
+    <div class="controls">
+      <label>追加する曲のジャンル（カンマ区切り）<input id="addGenres" placeholder="J-POP, アニメ"></label>
+      <label>追加する曲のタグ（カンマ区切り）<input id="addTags" placeholder="練習中, 高音"></label>
+    </div>
+    <!-- 登録＆削除 -->
+    <div class="controls">
+      <button id="loadListBtn" class="secondary">リスト登録（追加＆保存）</button>
+      <button id="clearAllBtn" class="danger">保存リスト全削除</button>
+    </div>
+
+    </details>
+
+  </div>
+
+<script src="legacy.js"></script>
+<script src="catalog.js"></script>
+<script src="app.js"></script>
+<script src="search-providers.js"></script>
+<script src="youtube.js"></script>
+
+</body>
+</html>
